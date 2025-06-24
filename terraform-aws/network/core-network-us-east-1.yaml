@@ -1,0 +1,94 @@
+# This file is part of the Terraform AWS Core Network module configuration.
+# It defines the network infrastructure for the AWS region us-east-1, including VPC,
+# subnets, route tables, and gateways.  
+## The configuration is structured in YAML format for easy readability and management.
+## ----------------------------------           
+# YAML CONFIGURATION FILE (core-network-us-east-1.yaml)
+# ----------------------------------
+
+region: "us-east-1"
+
+provider_tags:
+  CreatedBy: "Terraform"
+  Environment: "dev"      
+  Project: "core-network"
+  Region: "us-east-1"
+  CostCenter: "CC-NETWORK"
+  Section: "network"
+
+vpc:
+  cidr_block: "10.0.0.0/16"
+  secondary_cidr_blocks:
+    - "192.168.10.0/24"
+  enable_dns_support: true
+  enable_dns_hostnames: true
+  tags:
+    Name: "vpc-dev"
+    Component: "aws_vpc"    
+
+gateways:
+  internet_gateway: true
+
+nat_gateways:
+  - name: "nat-a"
+    enabled: true
+    subnet_name: "public-subnet-1"
+
+  - name: "nat-b"
+    enabled: true
+    subnet_name: "public-subnet-2"
+
+route_tables:
+  public-rt:
+    routes:
+      - cidr_block: "0.0.0.0/0"
+        gateway: "igw"
+
+  private-rt-a:
+    routes:
+      - cidr_block: "0.0.0.0/0"
+        gateway: "nat-a"
+
+  private-rt-b:
+    routes:
+      - cidr_block: "0.0.0.0/0"
+        gateway: "nat-b"
+
+  intra-rt:
+    routes:
+      - cidr_block: "10.0.0.0/16"
+        gateway: "local"
+
+public_subnets:
+  - name: "public-subnet-1"
+    cidr_block: "10.0.1.0/24"
+    availability_zone: "us-east-1a"
+    route_table: "public-rt"
+
+  - name: "public-subnet-2"
+    cidr_block: "10.0.2.0/24"
+    availability_zone: "us-east-1b"
+    route_table: "public-rt"
+
+  - name: "bastion-public-subnet-0"
+    cidr_block: "10.0.100.0/24"
+    availability_zone: "us-east-1a"
+    route_table: "public-rt"
+
+private_subnets:
+  - name: "private-subnet-1"
+    cidr_block: "10.0.101.0/24"
+    extra_cidr_blocks:
+      - "192.168.10.0/24"
+    availability_zone: "us-east-1a"
+    route_table: "private-rt-a"
+
+  - name: "private-subnet-2"
+    cidr_block: "10.0.102.0/24"
+    availability_zone: "us-east-1b"
+    route_table: "private-rt-b"
+
+  - name: "private-subnet-3"
+    cidr_block: "10.0.103.0/24"
+    availability_zone: "us-east-1c"
+    route_table: "private-rt-b"
