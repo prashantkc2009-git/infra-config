@@ -3,7 +3,7 @@
 # subnets, route tables, and gateways.  
 ## The configuration is structured in YAML format for easy readability and management.
 ## ----------------------------------           
-# YAML CONFIGURATION FILE (core-network-us-east-1.yaml)
+# YAML CONFIGURATION FILE (core-network-{region}.yaml)
 # ----------------------------------
 
 region: "us-east-1"
